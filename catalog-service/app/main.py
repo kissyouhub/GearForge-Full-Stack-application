@@ -1,5 +1,3 @@
-from logging import raiseExceptions
-from signal import raise_signal
 
 from fastapi import FastAPI, HTTPException,status, Depends
 from contextlib import asynccontextmanager
@@ -8,7 +6,7 @@ from app.config import get_settings
 from app.schemas import ProductSchema
 from app.models import Base, Product
 from app.database import engine,get_db, Session
-from sqlalchemy import select
+from sqlalchemy import intersect_all, select
 from fastapi import FastAPI
 
 
@@ -47,4 +45,10 @@ def get_product(product_id: str, db: Session = Depends(get_db)):
         )
     return product
 
-
+@app.post("", response_model=ProductSchema)
+def create_product(payload: ProductSchema, db: Session = Depends(get_db)) -> ProductSchema:
+    product = Product(**payload.model_dump())
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+    return product
