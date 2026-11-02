@@ -1,20 +1,9 @@
-from dataclasses import dataclass
-import os
+from pydantic import ConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-@dataclass(frozen=True)
-class Settings:
-    database_url: str 
-    cors_origins: list[str]
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    database_url: str = ("postgresql+psycopg2://myuser:admin@gearforge-db:5432/gearforge_db_catalog")
     
-    
-def get_settings () -> Settings:
-    return Settings(
-        database_url= os.getenv(
-            "DATABASE_URL", 
-            "postgresql+psycopg2://myuser:admin@gearforge-db:5432/gearforge_db",
-        ),
-        cors_origins=["*"],
-        
-    )
-    
+settings = Settings()
     

@@ -2,7 +2,7 @@
 from fastapi import FastAPI, HTTPException,status, Depends
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import get_settings
+from app.config import settings
 from app.schemas import ProductCreate, ProductRead
 from app.models import Base, Product
 from app.database import engine,get_db, Session
@@ -16,17 +16,8 @@ async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
     yield
     
-settings = get_settings()
+settings = settings()
 app = FastAPI(lifespan=lifespan)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    allow_credentials=True,
-)
-
 
 
 @app.get("/", response_model = list[ProductRead])
