@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException,status, Depends
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
-from app.schemas import ProductSchema
+from app.schemas import ProductCreate, ProductRead
 from app.models import Base, Product
 from app.database import engine,get_db, Session
 from sqlalchemy import select
@@ -29,12 +29,12 @@ app.add_middleware(
 
 
 
-@app.get("/", response_model = list[ProductSchema])
+@app.get("/", response_model = list[ProductRead])
 def get_products(db: Session = Depends(get_db)):
         query = select(Product).order_by(Product.name)
-        return list[Product](db.scalars(query).all())
+        return db.scalars(query).all()
     
-@app.get("/{product_id}", response_model= ProductSchema)
+@app.get("/{product_id}", response_model= ProductRead)
 def get_product(product_id: str, db: Session = Depends(get_db)):
     product = db.get(Product, product_id)
     if product is None:
@@ -45,8 +45,8 @@ def get_product(product_id: str, db: Session = Depends(get_db)):
         )
     return product
 
-@app.post("/", response_model=ProductSchema)
-def create_product(payload: ProductSchema, db: Session = Depends(get_db)) -> ProductSchema:
+@app.post("/", response_model=ProductCreate)
+def create_product(payload: ProductCreate, db: Session = Depends(get_db)) -> ProductCreate:
     product = Product(**payload.model_dump())
     db.add(product)
     db.commit()
