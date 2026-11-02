@@ -2,10 +2,10 @@ from fastapi import FastAPI,status, Depends
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
-
-from app.models import Base
-from app.database import engine
-
+from app.schemas import ProductSchema
+from app.models import Base, Product
+from app.database import engine,get_db, Session
+from sqlalchemy import select
 from fastapi import FastAPI
 
 
@@ -25,4 +25,15 @@ app.add_middleware(
     allow_headers=["*"],
     allow_credentials=True,
 )
+
+
+
+@app.get("", response_model = list[ProductSchema])
+def get_products(db: Session = Depends(get_db)):
+        query = select(Product).order_by(Product.name)
+        return list[Product](db.scalars(query).all())
+    
+
+    
+
 
