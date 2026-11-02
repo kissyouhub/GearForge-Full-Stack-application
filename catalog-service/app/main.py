@@ -1,4 +1,7 @@
-from fastapi import FastAPI,status, Depends
+from logging import raiseExceptions
+from signal import raise_signal
+
+from fastapi import FastAPI, HTTPException,status, Depends
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
@@ -33,7 +36,15 @@ def get_products(db: Session = Depends(get_db)):
         query = select(Product).order_by(Product.name)
         return list[Product](db.scalars(query).all())
     
-
-    
+@app.get("/{product_id}", response_model= ProductSchema)
+def get_product(product_id: str, db: Session = Depends(get_db)):
+    product = db.get(Product, product_id)
+    if product is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail = "Товар не найден"
+            
+        )
+    return product
 
 
