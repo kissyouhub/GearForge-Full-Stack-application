@@ -7,7 +7,7 @@ from app.config import get_settings
 settings = get_settings()
 
 
-engine = create_engine(settings.DATABASE_URL, echo=True)
+engine = create_engine(settings.database_url, echo=True)
 
 Sessionlocal = sessionmaker[Session](bind=engine)
 

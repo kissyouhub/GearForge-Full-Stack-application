@@ -6,7 +6,7 @@ from app.config import get_settings
 from app.schemas import ProductSchema
 from app.models import Base, Product
 from app.database import engine,get_db, Session
-from sqlalchemy import intersect_all, select
+from sqlalchemy import select
 from fastapi import FastAPI
 
 
@@ -29,7 +29,7 @@ app.add_middleware(
 
 
 
-@app.get("", response_model = list[ProductSchema])
+@app.get("/", response_model = list[ProductSchema])
 def get_products(db: Session = Depends(get_db)):
         query = select(Product).order_by(Product.name)
         return list[Product](db.scalars(query).all())
@@ -45,7 +45,7 @@ def get_product(product_id: str, db: Session = Depends(get_db)):
         )
     return product
 
-@app.post("", response_model=ProductSchema)
+@app.post("/", response_model=ProductSchema)
 def create_product(payload: ProductSchema, db: Session = Depends(get_db)) -> ProductSchema:
     product = Product(**payload.model_dump())
     db.add(product)
