@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GearForge - Игровое железо</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #00ffcc;
+            text-align: center;
+        }
+
+        .catalog {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+
+        .card p {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .price {
+            color: #00ffcc;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        button {
+            background: #00ffcc;
+            color: #000;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #00ccaa;
+        }
+
+        .error {
+            color: #ff4444;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #loading {
+            text-align: center;
+            margin-top: 20px;
+            color: #00ffcc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>GearForge Store</h1>
+    <div id="loading">Загрузка каталога...</div>
+    <div id="error-message" class="error"></div>
+    <div id="catalog" class="catalog"></div>
+
+    <script>
+        // ВАЖНО: Укажи здесь порт, на котором запущен твой Catalog Service (обычно 8000)
+        const API_URL = 'http://localhost:8000/products';
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Ошибка сети');
+
+                const products = await response.json();
+                document.getElementById('loading').style.display = 'none';
+
+                const catalogDiv = document.getElementById('catalog');
+
+                if (products.length === 0) {
+                    catalogDiv.innerHTML = '<p style="text-align:center; width:100%;">Каталог пуст.</p>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>${product.title}</h3>
+                        <p>${product.description || 'Описание отсутствует'}</p>
+                        <div class="price">${product.price} ₽</div>
+                        <button onclick="addToCart(${product.id})">В корзину</button>
+                    `;
+                    catalogDiv.appendChild(card);
+                });
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-message').innerText = 'Не удалось подключиться к серверу. Убедитесь, что FastAPI запущен на порту 8000.';
+                console.error(error);
+            }
+        }
+
+        function addToCart(productId) {
+            alert('Товар ' + productId + ' отправлен в корзину (логика корзины будет в Order Service)');
+        }
+
+        // Запуск при загрузке страницы
+        fetchProducts();
+    </script>
+</body>
+
+</html>
