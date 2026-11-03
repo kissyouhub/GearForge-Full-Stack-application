@@ -18,7 +18,7 @@ class Order(Base):
     __tablename__ = "orders"
     
     user_id: Mapped[int]
-    status: Mapped[str]
+    status: Mapped[str] = mapped_column(default="created")
     total_amount: Mapped[int]
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone = True),
@@ -33,7 +33,7 @@ class OrderItem(Base):
  
     order_id = Mapped[str] = mapped_column(ForeignKey("orders.id"))
     product_id = Mapped[str]
-    product_name = Mapped(str)
+    product_name = Mapped[str]
     quantity = Mapped[int]
     unit_price = Mapped[int]
     order: Mapped[Order] = relationship("Order", back_populates="items")
