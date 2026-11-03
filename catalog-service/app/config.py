@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-    database_url: str = ("postgresql+psycopg2://myuser:admin@gearforge-db:5432/gearforge_db_catalog")
+    database_url: str = ("postgresql+psycopg2://catalog:catalog@localhost:5433/catalog")
     
 settings = Settings()
     

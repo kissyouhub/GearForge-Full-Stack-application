@@ -19,7 +19,7 @@ app = FastAPI()
 
 
 
-@app.get("orders/{order_id}", response_model= OrderReadSchema)
+@app.get("/orders/{order_id}", response_model= OrderReadSchema)
 def get_order(order_id, order_service: OrderService = Depends(get_order_service)):
     return order_service.get(order_id)
 

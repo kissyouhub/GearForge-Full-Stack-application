@@ -14,26 +14,15 @@ class Base(DeclarativeBase):
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid4()))
     
     
-class Order(Base):
-    __tablename__ = "orders"
-    
-    user_id: Mapped[int]
-    status: Mapped[str] = mapped_column(default="created")
-    total_amount: Mapped[int]
+
+class PaymentORM(Base):
+    __tablename__ = "payments"
+ 
+    order_id: Mapped[str]
+    status: Mapped[str]
+    amount: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone = True),
         server_default=func.now(),
         nullable=False,
     )
-    items: Mapped[list[OrderItem]] = relationship("OrderItem", back_populates="order")
-
-
-class OrderItem(Base):
-    __tablename__ = "order_items"
- 
-    order_id: Mapped[str] = mapped_column(ForeignKey("orders.id"))
-    product_id: Mapped[str]
-    product_name: Mapped[str]
-    quantity: Mapped[int]
-    unit_price: Mapped[int]
-    order: Mapped[Order] = relationship("Order", back_populates="items")
