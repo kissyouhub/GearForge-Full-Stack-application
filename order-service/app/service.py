@@ -3,9 +3,9 @@ from urllib import response
 from xml.dom import NotFoundErr
 
 from sqlalchemy.orm import Session
-from app.models import Order
+from app.models import Order, OrderItem
 from app.config import NotFoundError
-from schemas import OrderCreateSchema
+from schemas import OrderCreateSchema, OrderReadSchema
 from catalog_client import CatalogClient
 class OrderService():
     def __init__(self, session: Session, catalog_client: CatalogClient):
@@ -18,7 +18,16 @@ class OrderService():
             raise NotFoundError
         return order
     
-    def create(self, order_data: OrderCreateSchema):
+    def create(self, order_data: OrderCreateSchema) -> OrderReadSchema:
         products = []
         for item in order_data.items:
-            product = self.catalog_client.get_product(product.product_id)
+            product = self.catalog_client.get_product(item.product_id)
+            products.append({"product_id": product["id"], "product_name": product["name"], "quantity": item.quantity, "unit_price": product["price"]})
+        total_amount = [product["unit_price"] for product in products]
+        order = Order(user_id=order_data.user_id, status="created", total_amount = total_amount)
+        self.session.add(order)
+        self.session.flush()
+        order.items = [OrderItem(order_id= order.id, **product) for product in products]
+        self.session.commit()
+        
+        return OrderReadSchema.model_validate(Order)

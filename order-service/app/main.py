@@ -7,7 +7,7 @@ from app.models import Base, Product
 from app.database import engine,get_db, Session
 from sqlalchemy import select
 from fastapi import FastAPI
-
+from app.service import OrderService
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
