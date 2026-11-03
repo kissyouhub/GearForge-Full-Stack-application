@@ -9,3 +9,6 @@ class Settings(BaseSettings):
 settings = Settings()
     
     
+class NotFoundError(Exception):
+    pass
+    

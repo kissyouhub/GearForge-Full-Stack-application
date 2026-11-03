@@ -16,11 +16,11 @@ async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
     yield
     
-settings = settings()
+
 app = FastAPI(lifespan=lifespan)
 
 
-@app.get("/", response_model = list[ProductRead])
+@app.get("/products", response_model = list[ProductRead])
 def get_products(db: Session = Depends(get_db)):
         query = select(Product).order_by(Product.name)
         return db.scalars(query).all()

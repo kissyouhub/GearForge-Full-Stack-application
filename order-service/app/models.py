@@ -31,9 +31,9 @@ class Order(Base):
 class OrderItem(Base):
     __tablename__ = "order_items"
  
-    order_id = Mapped[str] = mapped_column(ForeignKey("orders.id"))
-    product_id = Mapped[str]
-    product_name = Mapped[str]
-    quantity = Mapped[int]
-    unit_price = Mapped[int]
+    order_id: Mapped[str] = mapped_column(ForeignKey("orders.id"))
+    product_id: Mapped[str]
+    product_name: Mapped[str]
+    quantity: Mapped[int]
+    unit_price: Mapped[int]
     order: Mapped[Order] = relationship("Order", back_populates="items")
